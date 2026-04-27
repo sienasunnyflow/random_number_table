@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1d7a45" />
+    <meta name="description" content="テニスの練習会や対抗戦向けに乱数表を作成するPWAです。" />
     <title>テニス乱数表メーカー</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./app-icon.svg" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -116,7 +121,6 @@
         </div>
 
         <div class="actions">
-          <button id="syncPlayersButton" type="button">人数に合わせる</button>
           <button id="generateButton" class="primary-button" type="button">乱数表を作成</button>
         </div>
         <p id="message" class="message" role="status"></p>
@@ -193,5 +197,12 @@
     </main>
 
     <script src="./app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./service-worker.js");
+        });
+      }
+    </script>
   </body>
 </html>
