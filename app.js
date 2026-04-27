@@ -24,6 +24,9 @@ const elements = {
   matchMinutes: document.querySelector("#matchMinutes"),
   scheduleMode: document.querySelector("#scheduleMode"),
   matchPreference: document.querySelector("#matchPreference"),
+  priority1: document.querySelector("#priority1"),
+  priority2: document.querySelector("#priority2"),
+  priority3: document.querySelector("#priority3"),
   allowBreakFixedPairs: document.querySelector("#allowBreakFixedPairs"),
   teamSettings: document.querySelector("#teamSettings"),
   teamAName: document.querySelector("#teamAName"),
@@ -57,6 +60,7 @@ function loadState() {
       matchMinutes: 20,
       scheduleMode: "practice",
       matchPreference: "balanced",
+      priorityOrder: ["matchType", "avoidConsecutiveRest", "fairPlayCount"],
       allowBreakFixedPairs: true,
       teamNames: {
         A: "Aチーム",
@@ -118,6 +122,9 @@ function applyStateToControls() {
   elements.matchMinutes.value = String(state.settings.matchMinutes);
   elements.scheduleMode.value = state.settings.scheduleMode;
   elements.matchPreference.value = state.settings.matchPreference;
+  elements.priority1.value = state.settings.priorityOrder[0] || "matchType";
+  elements.priority2.value = state.settings.priorityOrder[1] || "avoidConsecutiveRest";
+  elements.priority3.value = state.settings.priorityOrder[2] || "fairPlayCount";
   elements.allowBreakFixedPairs.checked = Boolean(state.settings.allowBreakFixedPairs);
   elements.teamAName.value = state.settings.teamNames.A;
   elements.teamBName.value = state.settings.teamNames.B;
@@ -141,6 +148,7 @@ function readSettings() {
     matchMinutes: Number(elements.matchMinutes.value),
     scheduleMode: elements.scheduleMode.value,
     matchPreference: elements.matchPreference.value,
+    priorityOrder: [elements.priority1.value, elements.priority2.value, elements.priority3.value],
     allowBreakFixedPairs: elements.allowBreakFixedPairs.checked,
     teamNames: {
       A: elements.teamAName.value.trim() || "Aチーム",
@@ -410,6 +418,7 @@ function clearState() {
       matchMinutes: 20,
       scheduleMode: "practice",
       matchPreference: "balanced",
+      priorityOrder: ["matchType", "avoidConsecutiveRest", "fairPlayCount"],
       allowBreakFixedPairs: true,
       teamNames: {
         A: "Aチーム",
@@ -484,6 +493,7 @@ function buildSchedule(players, courtCount, roundCount, settings) {
         ...player,
         playCount: 0,
         restCount: 0,
+        restedLastRound: false,
       },
     ]),
   );
@@ -532,6 +542,12 @@ function buildSchedule(players, courtCount, roundCount, settings) {
     resting.forEach((player) => {
       stats.get(player.id).restCount += 1;
     });
+    selected.forEach((player) => {
+      stats.get(player.id).restedLastRound = false;
+    });
+    resting.forEach((player) => {
+      stats.get(player.id).restedLastRound = true;
+    });
     courts.forEach((court) => recordMatch(court, partnerHistory, opponentHistory));
 
     if (courts.length === 0) {
@@ -576,22 +592,46 @@ function pickBestMatch(players, stats, partnerHistory, opponentHistory, settings
     return null;
   }
 
+  const priorityWeights = getPriorityWeights(settings.priorityOrder);
+
   return candidates
     .map((match) => {
       const group = [...match.teamA, ...match.teamB];
       return {
         match,
         score:
-          groupPlayPriorityScore(group, stats) +
+          groupPlayPriorityScore(group, stats) * priorityWeights.fairPlayCount +
+          consecutiveRestScore(group, stats) * priorityWeights.avoidConsecutiveRest +
           groupHistoryScore(group, partnerHistory, opponentHistory) +
           playCountSpreadPenalty(group, stats) +
-          matchPreferenceScore(match.matchType, settings.matchPreference) +
+          matchPreferenceScore(match.matchType, settings.matchPreference) * priorityWeights.matchType +
           fixedPairPenalty(match, allPlayers, allowBreakFixedPair) +
           pairHistoryScore(match, partnerHistory, opponentHistory) +
           Math.random() * 0.2,
       };
     })
     .sort((a, b) => a.score - b.score)[0].match;
+}
+
+function getPriorityWeights(priorityOrder = []) {
+  const weights = {
+    matchType: 1,
+    avoidConsecutiveRest: 1,
+    fairPlayCount: 1,
+  };
+  const rankWeights = [8, 4, 2];
+  const seen = new Set();
+
+  priorityOrder.forEach((priority, index) => {
+    if (!weights[priority] || seen.has(priority)) {
+      return;
+    }
+
+    weights[priority] = rankWeights[index] || 1;
+    seen.add(priority);
+  });
+
+  return weights;
 }
 
 function getPracticeMatchCandidates(players, allPlayers, allowBreakFixedPair) {
@@ -751,6 +791,13 @@ function groupPlayPriorityScore(group, stats) {
   return group.reduce((total, player) => {
     const playerStats = stats.get(player.id);
     return total + playerStats.playCount * 100 - playerStats.restCount * 8;
+  }, 0);
+}
+
+function consecutiveRestScore(group, stats) {
+  return group.reduce((total, player) => {
+    const playerStats = stats.get(player.id);
+    return total + (playerStats.restedLastRound ? -80 : 12);
   }, 0);
 }
 
@@ -1189,6 +1236,9 @@ elements.courtCount.addEventListener("change", () => {
   elements.matchMinutes,
   elements.scheduleMode,
   elements.matchPreference,
+  elements.priority1,
+  elements.priority2,
+  elements.priority3,
   elements.allowBreakFixedPairs,
   elements.teamAName,
   elements.teamBName,
