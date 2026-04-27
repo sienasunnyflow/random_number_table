@@ -1,4 +1,4 @@
-const CACHE_NAME = "tennis-random-table-v4";
+const CACHE_NAME = "court-shuffle-v1";
 const APP_ASSETS = [
   "./",
   "./index.html",
