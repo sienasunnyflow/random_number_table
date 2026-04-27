@@ -3,9 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1d7a45" />
-    <meta name="description" content="テニスの練習会や対抗戦向けに乱数表を作成するPWAです。" />
-    <title>テニス乱数表メーカー</title>
+    <meta name="theme-color" content="#8f4b2f" />
+    <meta
+      name="description"
+      content="人数、コート数、時間、対抗戦条件から、見やすいテニスの組み合わせ表を作成するPWAです。"
+    />
+    <title>CourtShuffle</title>
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="./app-icon.svg" />
@@ -14,12 +17,18 @@
   <body>
     <header class="hero">
       <div>
-        <p class="eyebrow">Tennis Random Table</p>
-        <h1>テニス乱数表メーカー</h1>
+        <p class="eyebrow">Roland Garros Inspired</p>
+        <h1>CourtShuffle</h1>
         <p class="lead">
-          コート数・参加人数・性別・時間から、なるべく全員のプレー回数が均等になるように
-          ダブルスの乱数表を作成します。
+          テニスの組み合わせを、かんたん・きれいに。人数、コート数、時間、対抗戦条件を入れるだけ。
+          休憩やプレー回数の偏りを抑えながら、見やすい試合表を作成します。
         </p>
+      </div>
+      <div class="hero-card" aria-hidden="true">
+        <span class="court-line top"></span>
+        <span class="court-line middle"></span>
+        <span class="court-line bottom"></span>
+        <span class="ball"></span>
       </div>
     </header>
 
@@ -27,7 +36,7 @@
       <section class="panel settings-panel">
         <div class="section-title">
           <div>
-            <p class="eyebrow">Step 1</p>
+            <p class="eyebrow">Setup</p>
             <h2>開催条件</h2>
           </div>
           <button id="sampleButton" class="ghost-button" type="button">サンプル入力</button>
@@ -148,7 +157,7 @@
         </div>
 
         <div class="actions">
-          <button id="generateButton" class="primary-button" type="button">乱数表を作成</button>
+          <button id="generateButton" class="primary-button" type="button">組み合わせを作成</button>
         </div>
         <p id="message" class="message" role="status"></p>
       </section>
@@ -156,7 +165,7 @@
       <section class="panel">
         <div class="section-title">
           <div>
-            <p class="eyebrow">Step 2</p>
+            <p class="eyebrow">Players</p>
             <h2>参加者</h2>
           </div>
           <button id="clearButton" class="ghost-button danger" type="button">初期化</button>
@@ -167,7 +176,7 @@
       <section id="summaryPanel" class="panel summary-panel hidden">
         <div class="section-title">
           <div>
-            <p class="eyebrow">Result</p>
+            <p class="eyebrow">Summary</p>
             <h2>プレー回数サマリー</h2>
           </div>
         </div>
@@ -190,8 +199,8 @@
       <section id="schedulePanel" class="panel hidden">
         <div class="section-title">
           <div>
-            <p class="eyebrow">Schedule</p>
-            <h2>乱数表</h2>
+            <p class="eyebrow">Match Cards</p>
+            <h2>試合カード</h2>
           </div>
         </div>
         <div id="schedule" class="schedule"></div>
