@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>テニス乱数表メーカー</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Tennis Random Table</p>
+        <h1>テニス乱数表メーカー</h1>
+        <p class="lead">
+          コート数・参加人数・性別・時間から、なるべく全員のプレー回数が均等になるように
+          ダブルスの乱数表を作成します。
+        </p>
+      </div>
+    </header>
+
+    <main class="app">
+      <section class="panel settings-panel">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2>開催条件</h2>
+          </div>
+          <button id="sampleButton" class="ghost-button" type="button">サンプル入力</button>
+        </div>
+
+        <div class="settings-grid">
+          <label>
+            コート数
+            <select id="courtCount">
+              <option value="1" selected>1面</option>
+              <option value="2">2面</option>
+              <option value="3">3面</option>
+              <option value="4">4面</option>
+            </select>
+          </label>
+
+          <label>
+            参加人数
+            <select id="playerCount">
+              <option value="4" selected>4人</option>
+              <option value="5">5人</option>
+              <option value="6">6人</option>
+              <option value="7">7人</option>
+              <option value="8">8人</option>
+            </select>
+          </label>
+
+          <label>
+            時間
+            <select id="hours">
+              <option value="2" selected>2時間</option>
+              <option value="3">3時間</option>
+              <option value="4">4時間</option>
+              <option value="5">5時間</option>
+              <option value="6">6時間</option>
+              <option value="7">7時間</option>
+              <option value="8">8時間</option>
+            </select>
+          </label>
+
+          <label>
+            1試合の目安
+            <select id="matchMinutes">
+              <option value="15">15分</option>
+              <option value="20" selected>20分</option>
+              <option value="25">25分</option>
+              <option value="30">30分</option>
+            </select>
+          </label>
+
+          <label>
+            通常練習/対抗戦の選択
+            <select id="scheduleMode">
+              <option value="practice" selected>通常練習</option>
+              <option value="team">対抗戦</option>
+            </select>
+          </label>
+
+          <label>
+            対戦タイプ
+            <select id="matchPreference">
+              <option value="balanced" selected>バランスよく</option>
+              <option value="genderDoubles">男ダブ・女ダブ多め</option>
+              <option value="mixed">ミックス多め</option>
+            </select>
+          </label>
+
+          <label class="checkbox-label">
+            <input id="allowBreakFixedPairs" type="checkbox" checked />
+            固定ペアが多い場合、後半は崩してOK
+          </label>
+        </div>
+
+        <div id="teamSettings" class="team-settings hidden">
+          <label>
+            Aチーム名
+            <input id="teamAName" value="Aチーム" />
+          </label>
+          <label>
+            Aチーム人数
+            <select id="teamACount"></select>
+          </label>
+          <label>
+            Bチーム名
+            <input id="teamBName" value="Bチーム" />
+          </label>
+          <label>
+            Bチーム人数
+            <select id="teamBCount"></select>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="syncPlayersButton" type="button">人数に合わせる</button>
+          <button id="generateButton" class="primary-button" type="button">乱数表を作成</button>
+        </div>
+        <p id="message" class="message" role="status"></p>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Step 2</p>
+            <h2>参加者</h2>
+          </div>
+          <button id="clearButton" class="ghost-button danger" type="button">初期化</button>
+        </div>
+        <div id="playersList" class="players-list"></div>
+      </section>
+
+      <section id="summaryPanel" class="panel summary-panel hidden">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Result</p>
+            <h2>プレー回数サマリー</h2>
+          </div>
+        </div>
+        <div id="summaryCards" class="summary-cards"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>性別</th>
+                <th>プレー</th>
+                <th>休憩</th>
+              </tr>
+            </thead>
+            <tbody id="statsBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="schedulePanel" class="panel hidden">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Schedule</p>
+            <h2>乱数表</h2>
+          </div>
+        </div>
+        <div id="schedule" class="schedule"></div>
+      </section>
+
+      <section id="rankingPanel" class="panel hidden">
+        <div class="section-title">
+          <div>
+            <p class="eyebrow">Ranking</p>
+            <h2>成績ランキング</h2>
+          </div>
+        </div>
+        <div id="teamRanking" class="team-ranking hidden"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>順位</th>
+                <th>名前</th>
+                <th>勝敗</th>
+                <th>勝率</th>
+                <th>得失</th>
+                <th>得点</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
