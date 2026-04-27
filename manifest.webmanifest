@@ -1,0 +1,19 @@
+{
+  "name": "テニス乱数表メーカー",
+  "short_name": "テニス乱数表",
+  "description": "テニスの練習会や対抗戦向けに、参加者条件から乱数表を作成するアプリです。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7f2",
+  "theme_color": "#1d7a45",
+  "icons": [
+    {
+      "src": "./app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
