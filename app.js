@@ -31,7 +31,6 @@ const elements = {
   teamACount: document.querySelector("#teamACount"),
   teamBCount: document.querySelector("#teamBCount"),
   playersList: document.querySelector("#playersList"),
-  syncPlayersButton: document.querySelector("#syncPlayersButton"),
   generateButton: document.querySelector("#generateButton"),
   sampleButton: document.querySelector("#sampleButton"),
   clearButton: document.querySelector("#clearButton"),
@@ -233,14 +232,6 @@ function clamp(value, min, max) {
     return min;
   }
   return Math.min(Math.max(value, min), max);
-}
-
-function syncPlayersToCount() {
-  const settings = readSettings();
-  resizePlayers(settings.playerCount);
-  saveState();
-  renderPlayers();
-  setMessage(`${settings.playerCount}人分の参加者欄に合わせました。`);
 }
 
 function resizePlayers(nextCount) {
@@ -1148,7 +1139,6 @@ elements.playersList.addEventListener("change", (event) => {
   saveState();
 });
 
-elements.syncPlayersButton.addEventListener("click", syncPlayersToCount);
 elements.generateButton.addEventListener("click", generateSchedule);
 elements.sampleButton.addEventListener("click", fillSamplePlayers);
 elements.clearButton.addEventListener("click", clearState);
